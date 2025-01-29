@@ -16,10 +16,11 @@ public class TableClientFactory(string connectionString, ITableClientCreator tab
   /// Gets an instance of a TableClient for the given table name.
   /// </summary>
   /// <param name="tableName">the table to get</param>
+  /// <param name="cancellationToken"></param>
   /// <returns></returns>
   /// <exception cref="ArgumentException"></exception>
   /// <exception cref="InvalidOperationException"></exception>
-  public async Task<TableClient> GetTableClient(string tableName)
+  public async Task<TableClient> GetTableClient(string tableName, CancellationToken cancellationToken)
   {
     if (_tableClients.TryGetValue(tableName, out TableClient? value))
     {
@@ -38,7 +39,7 @@ public class TableClientFactory(string connectionString, ITableClientCreator tab
 
 
     var newClient = tableClientCreator.CreateTableClient(tableName, connectionString);
-    await newClient.CreateIfNotExistsAsync();
+    await newClient.CreateIfNotExistsAsync(cancellationToken);
     _tableClients.TryAdd(tableName, newClient);
 
     return newClient;
